@@ -45,6 +45,8 @@ app.post("/signup", async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// === LOGIN ===
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
