@@ -1,11 +1,19 @@
 import express from "express";
+import cors from "cors"; // Import cors
 import multer from "multer";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const app = express();
+const app = express(); // Define app first
+
+// Add CORS middleware AFTER defining app
+app.use(cors({
+  origin: 'http://localhost:5173', // Your frontend URL
+  credentials: true
+}));
+
 app.use(express.json()); // For JSON
 app.use(express.urlencoded({ extended: true })); // For form data
 
@@ -46,7 +54,6 @@ app.post("/signup", async (req, res) => {
     }
 });
 
-// === LOGIN ===
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -55,7 +62,6 @@ app.post("/login", async (req, res) => {
 });
 
 // ===== PASSWORD UPDATE =====
-// Alternative: Update password with current password verification
 app.patch("/change-password", async (req, res) => {
     try {
         if (!req.body || !req.body.email || !req.body.currentPassword || !req.body.newPassword) {
@@ -98,12 +104,10 @@ app.patch("/change-password", async (req, res) => {
     }
 });
 
-
-
 // ==== Upload ====
 app.post("/upload-file", upload.single("file"), async (req, res) => {
-     console.log("File received:", req.file); // Add this line
-  console.log("Body:", req.body); // Add this line
+  console.log("File received:", req.file);
+  console.log("Body:", req.body);
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
@@ -130,13 +134,9 @@ app.post("/upload-file", upload.single("file"), async (req, res) => {
 app.post("/users", async (req, res) => {
   const { name, age } = req.body;
   const { data, error } = await supabase
- .from("users")
+    .from("users")
     .insert([{ name, age }])
     .select();
-//  console.log("Supabase URL:", process.env.SUPABASE_URL);
-//  console.log("Supabase Key:", process.env.SUPABASE_KEY ? "Loaded" : "Missing");
-
-   
 
   if (error) return res.status(400).json({ error: error.message });
   res.json(data);
@@ -149,10 +149,10 @@ app.get("/find-users", async (req, res) => {
   res.json(data);
 });
 
-app.get("/Home",(req,res)=>{
+app.get("/Home", (req, res) => {
     res.send("Welcome to the page");
     console.log("Listening");
-})
+});
 
 // ===== START SERVER =====
 app.listen(process.env.PORT, () => {
