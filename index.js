@@ -8,11 +8,20 @@ dotenv.config();
 
 const app = express(); // Define app first
 
-// Add CORS middleware AFTER defining app
+
+app.use(cors());
+
+
 app.use(cors({
-  origin: 'http://localhost:5173', // Your frontend URL
+  origin: ["https://frontend-google-drive-clone.vercel.app"], 
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
+
+
+
+
+
 
 app.use(express.json()); // For JSON
 app.use(express.urlencoded({ extended: true })); // For form data
